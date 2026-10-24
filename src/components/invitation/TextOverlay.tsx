@@ -87,8 +87,8 @@ export function TextOverlay({ visible }: { visible: Set<string> }) {
         className={`absolute inset-x-0 px-[6cqw] text-center ${
           pos === "top"
             ? "top-[7%]"
-            : key === "closing-bottom"
-              ? "bottom-[7%]"
+            : key === "closing-bottom" || key === "scripture"
+              ? "bottom-[7.5%]"
               : "bottom-[3.5%]"
         }`}
       >
