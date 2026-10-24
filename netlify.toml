@@ -5,8 +5,23 @@
 [build.environment]
   NITRO_PRESET = "netlify"
   NODE_VERSION = "22"
+  NETLIFY_FEEDBACK_DISABLED = "true"
+  NETLIFY_PREVIEW_DRAWER = "false"
+
+[context.production.environment]
+  NETLIFY_FEEDBACK_DISABLED = "true"
+  NETLIFY_PREVIEW_DRAWER = "false"
+
+[context.deploy-preview.environment]
+  NETLIFY_FEEDBACK_DISABLED = "true"
+  NETLIFY_PREVIEW_DRAWER = "false"
 
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"

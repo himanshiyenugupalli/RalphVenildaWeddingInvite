@@ -35,20 +35,28 @@ export function CinematicInvitation() {
 
     const draw = (force = false) => {
       const img = loader.nearest(frameRef.current);
-      if (!img || (!force && img === drawnRef.current)) return;
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      if (!force && img === drawnRef.current) return;
       drawnRef.current = img;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      if (canvas.width > 0 && canvas.height > 0) {
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
     };
 
     const sizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Fallback width if layout hasn't settled yet on mobile
+      const fallbackW = canvas.parentElement?.clientWidth || window.innerWidth;
+      const clientW = rect.width > 0 ? rect.width : fallbackW;
       // Never exceed native frame resolution.
-      const w = Math.min(Math.round(rect.width * dpr), FRAME_CONFIG.width);
-      canvas.width = w;
-      canvas.height = Math.round((w * FRAME_CONFIG.height) / FRAME_CONFIG.width);
-      draw(true);
+      const w = Math.min(Math.round(clientW * dpr), FRAME_CONFIG.width);
+      if (w > 0) {
+        canvas.width = w;
+        canvas.height = Math.round((w * FRAME_CONFIG.height) / FRAME_CONFIG.width);
+        draw(true);
+      }
     };
 
     const update = () => {
@@ -74,8 +82,10 @@ export function CinematicInvitation() {
     };
 
     loader.onFrameLoaded = (i) => {
-      // Redraw if the newly loaded frame is a better match than what's on screen.
-      if (Math.abs(i - frameRef.current) <= 2) draw();
+      // Redraw if newly loaded frame is close to current position or if nothing has drawn yet
+      if (!drawnRef.current || Math.abs(i - frameRef.current) <= 8) {
+        draw(true);
+      }
     };
 
     loader.probe().then((ok) => {
@@ -85,6 +95,7 @@ export function CinematicInvitation() {
         sizeCanvas();
         update();
         loader.setCurrent(frameRef.current);
+        loader.preload(20);
       }
     });
 
@@ -111,7 +122,10 @@ export function CinematicInvitation() {
       ref={sectionRef}
       aria-label="Animated wedding invitation"
       className="relative bg-paper"
-      style={{ height: `${SCROLL_CONFIG.scrollLengthVh}svh` }}
+      style={{
+        height: `${SCROLL_CONFIG.scrollLengthVh}vh`,
+        minHeight: `${SCROLL_CONFIG.scrollLengthVh}svh`,
+      }}
     >
       {/* Accessible text version of the invitation */}
       <div className="sr-only">
@@ -128,7 +142,7 @@ export function CinematicInvitation() {
         <p>{WEDDING.closingMessage}</p>
       </div>
 
-      <div className="sticky top-0 flex h-svh w-full items-center justify-center overflow-hidden bg-paper">
+      <div className="sticky top-0 flex h-screen min-h-svh w-full items-center justify-center overflow-hidden bg-paper">
         <div className="portrait-stage">
           <canvas
             ref={canvasRef}
