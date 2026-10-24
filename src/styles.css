@@ -1,0 +1,187 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Ralph & Venilda — design system.
+ * Palette: baby blue #BFE4FF, royal navy #142B52, white #FFFFFF.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-baby: var(--baby);
+  --color-baby-soft: var(--baby-soft);
+  --color-navy: var(--navy);
+  --color-navy-soft: var(--navy-soft);
+  --color-paper: var(--paper);
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-script: "Pinyon Script", "Cormorant Garamond", cursive;
+  --font-sans: "Jost", system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.25rem;
+  --baby: oklch(0.894 0.06 238.5); /* #BFE4FF */
+  --baby-soft: oklch(0.96 0.025 238.5);
+  --navy: oklch(0.297 0.083 262.4); /* #142B52 */
+  --navy-soft: oklch(0.44 0.07 262);
+  --paper: oklch(1 0 0); /* #FFFFFF */
+
+  --background: var(--paper);
+  --foreground: var(--navy);
+  --card: var(--paper);
+  --card-foreground: var(--navy);
+  --popover: var(--paper);
+  --popover-foreground: var(--navy);
+  --primary: var(--navy);
+  --primary-foreground: var(--paper);
+  --secondary: var(--baby);
+  --secondary-foreground: var(--navy);
+  --muted: var(--baby-soft);
+  --muted-foreground: var(--navy-soft);
+  --accent: var(--baby);
+  --accent-foreground: var(--navy);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: var(--paper);
+  --border: oklch(0.297 0.083 262.4 / 18%);
+  --input: oklch(0.297 0.083 262.4 / 25%);
+  --ring: var(--navy);
+
+  --text-glow: 0 0 18px oklch(1 0 0 / 85%), 0 0 4px oklch(1 0 0 / 90%);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    overflow-x: clip;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+  }
+  :focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 3px;
+  }
+}
+
+/* ---------- Cinematic stage ---------- */
+
+/* 9:16 stage: full width on phones, centred column with white sides on wide screens.
+   No gap/padding between the white side areas and the stage. */
+@utility portrait-stage {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  height: min(100svh, calc(100vw * 16 / 9));
+  width: auto;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  background: var(--baby-soft);
+}
+
+@utility stage-text {
+  text-shadow: var(--text-glow);
+  color: var(--navy);
+}
+
+@utility reveal {
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+  &[data-visible="false"] {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  &[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  color: var(--navy);
+  &::before,
+  &::after {
+    content: "";
+    height: 1px;
+    width: 4.5rem;
+    background: linear-gradient(90deg, transparent, var(--navy));
+  }
+  &::after {
+    background: linear-gradient(90deg, var(--navy), transparent);
+  }
+}
+
+/* The ✦ ornament gently twinkles */
+.ornament > span {
+  display: inline-block;
+  animation: twinkle 3.4s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .section-fade,
+  .stagger,
+  .stagger > *,
+  .ornament > span,
+  .ornament::before,
+  .ornament::after {
+    transition: opacity 150ms linear !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
