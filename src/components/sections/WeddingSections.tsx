@@ -114,7 +114,7 @@ export function LiveWeddingSection() {
           <Heading id="live" eyebrow="From Afar" title="Live Wedding" />
         </Reveal>
         <Reveal delay={140}>
-          <p className="font-serif text-xl leading-relaxed text-navy-soft">
+          <p className="font-serif text-xl sm:text-2xl font-bold leading-relaxed text-navy">
             Can't be with us in person? Join the celebration remotely.
           </p>
         </Reveal>

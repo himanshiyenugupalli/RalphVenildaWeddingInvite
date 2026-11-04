@@ -8,8 +8,10 @@ export const WEDDING = {
   groom: "Ralph",
   eventTitle: "Ralph & Venilda Wedding",
   scripture: {
+    line1: "What God has yoked together",
+    line2: "let no man put apart.",
     text: "What God has yoked together let no man put apart.",
-    reference: "Matthew 19:6",
+    reference: "MATTHEW 10:6",
   },
   dateShort: "January 1st, 2027",
   dateLong: "Friday, January 1, 2027",

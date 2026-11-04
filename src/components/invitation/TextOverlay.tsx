@@ -14,12 +14,13 @@ function BlockContent({ block }: { block: TextBlock }) {
       );
     case "scripture":
       return (
-        <p className="mx-auto max-w-[82cqw] font-serif text-[4.2cqw] italic leading-snug">
-          “{WEDDING.scripture.text}”
-          <span className="mt-[1cqw] block not-italic font-sans text-[2.8cqw] uppercase tracking-[0.25em]">
-            — {WEDDING.scripture.reference}.
+        <div className="mx-auto max-w-[88cqw] font-serif text-[5cqw] italic leading-snug">
+          <span className="block">{WEDDING.scripture.line1}</span>
+          <span className="block">{WEDDING.scripture.line2}</span>
+          <span className="mt-[1.4cqw] block not-italic font-sans text-[3.4cqw] font-medium uppercase tracking-[0.25em]">
+            {WEDDING.scripture.reference}
           </span>
-        </p>
+        </div>
       );
     case "eyebrow":
       return <p className="font-script text-[8.5cqw] leading-tight">Save the Date</p>;
@@ -44,19 +45,19 @@ function BlockContent({ block }: { block: TextBlock }) {
       );
     case "closingTop":
       return (
-        <p className="mx-auto max-w-[80cqw] text-balance font-serif text-[3.9cqw] italic leading-snug tracking-wide">
+        <p className="mx-auto max-w-[82cqw] text-balance font-serif font-bold text-[4.2cqw] italic leading-snug tracking-wide">
           {WEDDING.closingTop}
         </p>
       );
     case "closingBottom":
       return (
-        <p className="mx-auto max-w-[80cqw] text-balance font-serif text-[3.9cqw] italic leading-snug tracking-wide">
+        <p className="mx-auto max-w-[82cqw] text-balance font-serif font-bold text-[4.2cqw] italic leading-snug tracking-wide">
           {WEDDING.closingBottom}
         </p>
       );
     case "closing":
       return (
-        <p className="mx-auto max-w-[78cqw] text-balance font-serif text-[4.5cqw] italic leading-snug">
+        <p className="mx-auto max-w-[80cqw] text-balance font-serif font-bold text-[4.6cqw] italic leading-snug">
           {WEDDING.closingMessage}
         </p>
       );
@@ -87,9 +88,11 @@ export function TextOverlay({ visible }: { visible: Set<string> }) {
         className={`absolute inset-x-0 px-[6cqw] text-center ${
           pos === "top"
             ? "top-[7%]"
-            : key === "closing-bottom" || key === "scripture"
-              ? "bottom-[7.5%]"
-              : "bottom-[3.5%]"
+            : key === "scripture"
+              ? "bottom-[11%]"
+              : key === "closing-bottom"
+                ? "bottom-[7.5%]"
+                : "bottom-[3.5%]"
         }`}
       >
         {blocks

@@ -94,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@400;500&family=Pinyon+Script&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Jost:wght@400;500;600;700&family=Pinyon+Script&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -110,6 +110,41 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Anti-branding: suppress and purge any Netlify badge, HUD, or injected overlays */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              #nl-badge-frame, .nl-badge-frame, iframe[id*="nl-badge"], iframe[title*="Netlify" i], iframe[title*="powered by netlify" i], iframe[src*="netlify"], #netlify-drawer, [data-netlify-drawer], [data-netlify-widget], .netlify-badge {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+              }
+            `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function purgeNetlify() {
+                  var els = document.querySelectorAll('#nl-badge-frame, .nl-badge-frame, iframe[id*="nl-badge"], iframe[title*="Netlify" i], iframe[title*="powered by netlify" i], iframe[src*="netlify"], #netlify-drawer, [data-netlify-drawer], [data-netlify-widget], .netlify-badge, script[src*="/hud"]');
+                  for (var i = 0; i < els.length; i++) {
+                    try { els[i].remove(); } catch (e) {}
+                  }
+                }
+                if (typeof MutationObserver !== 'undefined') {
+                  new MutationObserver(function() { purgeNetlify(); }).observe(document.documentElement, { childList: true, subtree: true });
+                }
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', purgeNetlify);
+                } else {
+                  purgeNetlify();
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         {children}

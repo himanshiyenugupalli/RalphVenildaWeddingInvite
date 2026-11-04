@@ -37,7 +37,7 @@ export const SCENES: Scene[] = [
   {
     id: "scene-1",
     startFrame: 0,
-    endFrame: 70,
+    endFrame: 41,
     textBlocks: [
       // 1st Ralph and Venilda appears at the very bottom…
       { id: "couple-names", position: "bottom", variant: "names", order: 0, startProgress: 0.05, endProgress: 0.45 },
@@ -47,8 +47,8 @@ export const SCENES: Scene[] = [
   },
   {
     id: "scene-2",
-    startFrame: 71,
-    endFrame: 135,
+    startFrame: 42,
+    endFrame: 79,
     textBlocks: [
       { id: "save-the-date", position: "top", variant: "eyebrow", order: 0, startProgress: 0.08, endProgress: 0.93 },
       { id: "date", position: "top", variant: "date", order: 1, startProgress: 0.3, endProgress: 0.93 },
@@ -57,19 +57,19 @@ export const SCENES: Scene[] = [
   },
   {
     id: "scene-3",
-    startFrame: 136,
-    endFrame: 200,
+    startFrame: 80,
+    endFrame: 117,
     textBlocks: [
       { id: "join-us", position: "bottom", variant: "venueTitle", order: 0, startProgress: 0.1, endProgress: 0.93 },
       { id: "venue", position: "bottom", variant: "venue", order: 1, startProgress: 0.28, endProgress: 0.93 },
     ],
   },
   // Scene 4 — original animation only, no text.
-  { id: "scene-4", startFrame: 201, endFrame: 240, textBlocks: [] },
+  { id: "scene-4", startFrame: 118, endFrame: 141, textBlocks: [] },
   {
     id: "scene-5",
-    startFrame: 241,
-    endFrame: 295,
+    startFrame: 142,
+    endFrame: 173,
     textBlocks: [
       // Top: Come share our joy, laughter and happiness
       { id: "closing-top", position: "top", variant: "closingTop", order: 0, startProgress: 0.15, endProgress: 1.01 },

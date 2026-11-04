@@ -76,24 +76,13 @@ export class FrameLoader {
     return out.filter((i, k, arr) => i >= 0 && i < this.count && arr.indexOf(i) === k);
   }
 
-  /** Preload an initial batch of frames immediately */
-  preload(count = this.profile.initial) {
-    const n = Math.min(count, this.count);
-    for (let i = 0; i < n; i++) {
-      if (!this.cache.has(i) && !this.inflight.has(i) && !this.failed.has(i)) {
-        void this.load(i).then(() => this.pump());
-      }
-    }
-  }
-
   private pump() {
     if (this.disposed) return;
     const wanted = this.wanted();
     const wantedSet = new Set(wanted);
-    // Only cancel requests that drifted far out of the active window (>35 frames away).
-    // This prevents mobile scroll events from cancelling in-flight downloads before they finish.
+    // Cancel requests that drifted far out of the window.
     for (const [i, img] of this.inflight) {
-      if (!wantedSet.has(i) && Math.abs(i - this.current) > 35) {
+      if (!wantedSet.has(i)) {
         img.src = "";
         this.inflight.delete(i);
       }
@@ -122,6 +111,7 @@ export class FrameLoader {
   private load(i: number): Promise<boolean> {
     return new Promise((resolve) => {
       const img = new Image();
+      img.decoding = "async";
       this.inflight.set(i, img);
       const done = (ok: boolean) => {
         if (this.inflight.get(i) !== img) return resolve(false); // cancelled
@@ -136,7 +126,10 @@ export class FrameLoader {
         resolve(ok);
       };
       img.onload = () => {
-        done(true);
+        (img.decode ? img.decode() : Promise.resolve()).then(
+          () => done(true),
+          () => done(true),
+        );
       };
       img.onerror = () => done(false);
       img.src = frameUrl(i);

@@ -33,20 +33,31 @@ export function CinematicInvitation() {
     let raf = 0;
     let alive = true;
 
+    let drawRaf = 0;
+    const requestDraw = () => {
+      if (!drawRaf) {
+        drawRaf = requestAnimationFrame(() => {
+          drawRaf = 0;
+          draw();
+        });
+      }
+    };
+
     const draw = (force = false) => {
       const img = loader.nearest(frameRef.current);
       if (!img || !img.complete || img.naturalWidth === 0) return;
       if (!force && img === drawnRef.current) return;
       drawnRef.current = img;
       if (canvas.width > 0 && canvas.height > 0) {
-        ctx.imageSmoothingQuality = "high";
+        ctx.imageSmoothingQuality = "medium";
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       }
     };
 
     const sizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const isMobile = window.innerWidth < LOADER_CONFIG.mobileBreakpoint;
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
       // Fallback width if layout hasn't settled yet on mobile
       const fallbackW = canvas.parentElement?.clientWidth || window.innerWidth;
       const clientW = rect.width > 0 ? rect.width : fallbackW;
@@ -83,8 +94,8 @@ export function CinematicInvitation() {
 
     loader.onFrameLoaded = (i) => {
       // Redraw if newly loaded frame is close to current position or if nothing has drawn yet
-      if (!drawnRef.current || Math.abs(i - frameRef.current) <= 8) {
-        draw(true);
+      if (!drawnRef.current || Math.abs(i - frameRef.current) <= 2) {
+        requestDraw();
       }
     };
 
@@ -95,7 +106,7 @@ export function CinematicInvitation() {
         sizeCanvas();
         update();
         loader.setCurrent(frameRef.current);
-        loader.preload(20);
+        loader.preload(10);
       }
     });
 
@@ -108,6 +119,7 @@ export function CinematicInvitation() {
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      if (drawRaf) cancelAnimationFrame(drawRaf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       ro.disconnect();
@@ -147,7 +159,7 @@ export function CinematicInvitation() {
           <canvas
             ref={canvasRef}
             aria-hidden="true"
-            className="absolute inset-0 block h-full w-full"
+            className="absolute inset-0 block h-full w-full [transform:translateZ(0)] will-change-transform"
           />
 
           {status !== "ready" && <StagePlaceholder status={status} />}

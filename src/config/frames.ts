@@ -8,16 +8,16 @@
 export const FRAME_CONFIG = {
   /** Public URL folder (maps to `public/frames/`). */
   basePath: "/frames/",
-  /** Filename prefix, e.g. "frame_" for frame_0001.jpg. EZGIF often uses "ezgif-frame-". */
-  prefix: "ezgif-frame-",
+  /** Filename prefix, e.g. "frame_" for frame_001.webp. */
+  prefix: "frame_",
   /** Zero-padding width of the number: 4 → 0001, 3 → 001. */
   padLength: 3,
   /** File extension including the dot. */
-  extension: ".jpg",
-  /** Number of the first file (1 for frame_0001.jpg, 0 for frame_0000.jpg). */
+  extension: ".webp",
+  /** Number of the first file (1 for frame_001.webp, 0 for frame_000.webp). */
   firstNumber: 1,
   /** Total number of frames — set to the actual count in public/frames/. */
-  frameCount: 296,
+  frameCount: 174,
   /** Native frame size (used for the 9:16 stage and canvas drawing). */
   width: 1080,
   height: 1920,
@@ -30,12 +30,12 @@ export function frameUrl(index: number): string {
 }
 
 /**
- * LOADING / MEMORY PARAMETERS — tune after testing on real devices.
+ * LOADING / MEMORY PARAMETERS — tune after testing on real devices.  
  * Full-resolution 1080×1920 frames are ~8 MB each once decoded, so the cache is bounded.
  */
 export const LOADER_CONFIG = {
-  mobile: { maxCached: 64, concurrency: 5, ahead: 32, behind: 12, initial: 15 },
-  desktop: { maxCached: 120, concurrency: 6, ahead: 45, behind: 20, initial: 20 },
+  mobile: { maxCached: 48, concurrency: 3, ahead: 24, behind: 10, initial: 12 },
+  desktop: { maxCached: 120, concurrency: 5, ahead: 45, behind: 20, initial: 20 },
   /** Below this width (px) the mobile profile is used. */
   mobileBreakpoint: 768,
 };
