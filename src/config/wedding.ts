@@ -32,9 +32,10 @@ export const WEDDING = {
   /**
    * LIVESTREAM: no URL has been supplied yet.
    * Paste the real livestream link here (e.g. "https://youtube.com/live/...").
-   * While empty, the "Watch Live Wedding" button shows a "link coming soon" state.
+   * While empty, the "Watch Live Wedding" button shows a placeholder notice.
    */
   livestreamUrl: "" as string,
+  livestreamNotice: "Livestream will be available 3 days before wedding",
   music: {
     src: "/wedding-song.mp3",
     title: "Ralph & Venilda Wedding Song",
