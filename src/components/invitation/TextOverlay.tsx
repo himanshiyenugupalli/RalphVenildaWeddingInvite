@@ -8,7 +8,7 @@ function BlockContent({ block }: { block: TextBlock }) {
       return (
         <div className="leading-tight">
           <span className="block font-script text-[14cqw]">{WEDDING.groom}</span>
-          <span className="my-[0.5cqw] block font-serif text-[3.6cqw] italic tracking-[0.2em]">with</span>
+          <span className="my-[0.5cqw] block font-serif text-[3.6cqw] italic tracking-[0.2em]">weds</span>
           <span className="block font-script text-[14cqw]">{WEDDING.bride}</span>
         </div>
       );
@@ -89,7 +89,7 @@ export function TextOverlay({ visible }: { visible: Set<string> }) {
           pos === "top"
             ? "top-[7%]"
             : key === "scripture"
-              ? "bottom-[11%]"
+              ? "bottom-[8.5%]"
               : key === "closing-bottom"
                 ? "bottom-[7.5%]"
                 : "bottom-[3.5%]"

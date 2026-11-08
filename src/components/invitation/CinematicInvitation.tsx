@@ -143,7 +143,7 @@ export function CinematicInvitation() {
       {/* Accessible text version of the invitation */}
       <div className="sr-only">
         <h1>
-          {WEDDING.groom} with {WEDDING.bride}
+          {WEDDING.groom} weds {WEDDING.bride}
         </h1>
         <p>
           “{WEDDING.scripture.text}” — {WEDDING.scripture.reference}.
@@ -168,10 +168,10 @@ export function CinematicInvitation() {
           <TextOverlay visible={visible} />
         </div>
 
-        {/* Scroll prompt: visible initially to guide visitors, smoothly fades away once scrolling begins */}
+        {/* Scroll prompt: positioned at the top initially, smoothly floats up & fades away once scrolling begins */}
         <div
-          className={`pointer-events-none absolute bottom-5 sm:bottom-7 z-30 flex flex-col items-center transition-all duration-700 ease-out ${
-            frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+          className={`pointer-events-none absolute top-4 sm:top-6 inset-x-0 z-30 flex justify-center transition-all duration-700 ease-out ${
+            frame > 3 ? "opacity-0 -translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
           }`}
           aria-hidden={frame > 3}
         >

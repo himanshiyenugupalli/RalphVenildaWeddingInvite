@@ -128,7 +128,7 @@ export function LiveWeddingSection() {
               <button type="button" disabled aria-disabled="true" className={`${btn} cursor-not-allowed opacity-50`}>
                 <Video className="h-4 w-4" aria-hidden="true" /> Watch Live Wedding
               </button>
-              <p className="font-sans text-xs uppercase tracking-[0.2em] text-navy-soft text-center max-w-md">
+              <p className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-navy text-center max-w-md">
                 {WEDDING.livestreamNotice}
               </p>
             </div>
