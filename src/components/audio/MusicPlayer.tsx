@@ -84,7 +84,7 @@ export function MusicPlayer() {
     <button
       type="button"
       onClick={toggleMusic}
-      className="group fixed top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2 rounded-full bg-paper/85 px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy transition-all duration-300 hover:bg-paper hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+      className="group fixed top-4 sm:top-6 inset-x-0 mx-auto w-fit z-50 flex items-center gap-2 rounded-full bg-paper/85 px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy transition-all duration-300 hover:bg-paper hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
       aria-label={isPlaying ? "Mute background music" : "Play background music"}
       title={isPlaying ? "Mute music" : "Play music"}
     >

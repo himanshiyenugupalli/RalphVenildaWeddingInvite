@@ -168,10 +168,10 @@ export function CinematicInvitation() {
           <TextOverlay visible={visible} />
         </div>
 
-        {/* Scroll prompt: positioned at the top initially, smoothly floats up & fades away once scrolling begins */}
+        {/* Scroll prompt: positioned at the bottom middle initially, smoothly floats down & fades away once scrolling begins */}
         <div
-          className={`pointer-events-none absolute top-4 sm:top-6 inset-x-0 z-30 flex justify-center transition-all duration-700 ease-out ${
-            frame > 3 ? "opacity-0 -translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+          className={`pointer-events-none absolute bottom-5 sm:bottom-7 inset-x-0 z-30 flex justify-center transition-all duration-700 ease-out ${
+            frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
           }`}
           aria-hidden={frame > 3}
         >
