@@ -35,6 +35,10 @@ export const WEDDING = {
    * While empty, the "Watch Live Wedding" button shows a "link coming soon" state.
    */
   livestreamUrl: "" as string,
+  music: {
+    src: "/wedding-song.mp3",
+    title: "Ralph & Venilda Wedding Song",
+  },
 } as const;
 
 export const venueFullAddress = () =>

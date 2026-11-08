@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { FRAME_CONFIG, LOADER_CONFIG, SCROLL_CONFIG, frameUrl } from "@/config/frames";
 import { visibleBlockIds } from "@/config/scenes";
 import { WEDDING, venueFullAddress } from "@/config/wedding";
@@ -165,6 +166,24 @@ export function CinematicInvitation() {
           {status !== "ready" && <StagePlaceholder status={status} />}
 
           <TextOverlay visible={visible} />
+        </div>
+
+        {/* Scroll prompt: visible initially to guide visitors, smoothly fades away once scrolling begins */}
+        <div
+          className={`pointer-events-none absolute bottom-5 sm:bottom-7 z-30 flex flex-col items-center transition-all duration-700 ease-out ${
+            frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+          }`}
+          aria-hidden={frame > 3}
+        >
+          <div className="flex flex-col items-center gap-1 rounded-full bg-paper/85 px-4 py-2 sm:px-5 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy">
+            <span className="font-sans text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.25em] text-navy">
+              Scroll Down
+            </span>
+            <span className="font-serif italic text-xs sm:text-sm text-navy/70 leading-none">
+              to experience the 3D motion
+            </span>
+            <ChevronDown className="h-4 w-4 animate-bounce text-navy/80 mt-0.5" />
+          </div>
         </div>
       </div>
     </section>
