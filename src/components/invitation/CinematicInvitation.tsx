@@ -112,6 +112,9 @@ export function CinematicInvitation() {
       setLoadedFrames(loaded);
       const pct = Math.min(100, Math.round((loaded / total) * 100));
       setLoadProgress(pct);
+      if (pct >= 99 || loaded >= total) {
+        setIsFullyPreloaded(true);
+      }
       if (loaded >= 1 && !drawnRef.current) {
         sizeCanvas();
         draw(true);
