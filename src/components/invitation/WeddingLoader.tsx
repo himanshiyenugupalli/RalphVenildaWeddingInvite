@@ -3,8 +3,8 @@ import { WEDDING } from "@/config/wedding";
 
 interface WeddingLoaderProps {
   progress: number;
-  loadedCount: number;
-  totalCount: number;
+  loadedCount?: number;
+  totalCount?: number;
   isReady: boolean;
   onEnter: () => void;
   fadeOut: boolean;
@@ -12,8 +12,6 @@ interface WeddingLoaderProps {
 
 export function WeddingLoader({
   progress,
-  loadedCount,
-  totalCount,
   isReady,
   onEnter,
   fadeOut,
@@ -52,15 +50,11 @@ export function WeddingLoader({
         {WEDDING.groom} &amp; {WEDDING.bride}
       </h1>
 
-      <p className="font-sans text-xs uppercase tracking-[0.35em] text-navy-soft mt-2 text-center">
-        Wedding Celebration · {WEDDING.dateShort}
-      </p>
-
       {!isReady ? (
-        <div className="mt-8 flex flex-col items-center w-full max-w-xs">
-          <div className="flex w-full items-center justify-between text-xs font-sans tracking-[0.15em] text-navy/70 mb-2">
-            <span className="font-serif italic text-sm text-navy/85">Loading 3D experience…</span>
-            <span className="font-sans font-semibold text-navy">{progress}%</span>
+        <div className="mt-7 flex flex-col items-center w-full max-w-xs">
+          <div className="flex w-full items-center justify-between text-xs font-sans tracking-[0.18em] text-navy/70 mb-2">
+            <span className="font-serif italic text-base text-navy/85">Wedding Loading…</span>
+            <span className="font-sans font-medium text-navy">{progress}%</span>
           </div>
 
           {/* Progress bar */}
@@ -70,10 +64,6 @@ export function WeddingLoader({
               style={{ width: `${Math.max(4, progress)}%` }}
             />
           </div>
-
-          <span className="mt-3 text-[11px] font-sans tracking-[0.2em] uppercase text-navy-soft/80">
-            {loadedCount} of {totalCount} frames loaded
-          </span>
         </div>
       ) : (
         <div className="mt-8 flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
@@ -85,9 +75,6 @@ export function WeddingLoader({
             <span>Open Invitation</span>
             <span className="text-sm">✦</span>
           </button>
-          <p className="mt-3 text-xs font-serif italic text-navy-soft">
-            Ready to scroll smoothly
-          </p>
         </div>
       )}
     </div>
