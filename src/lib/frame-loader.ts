@@ -41,6 +41,45 @@ export class FrameLoader {
     return ok;
   }
 
+  get loadedCount(): number {
+    return this.cache.size;
+  }
+
+  get isFullyLoaded(): boolean {
+    return this.cache.size >= this.count;
+  }
+
+  /**
+   * Preload all frames up to `this.count` with a concurrency pool.
+   * Reports progress (loaded, total) on each completion.
+   */
+  async preloadAll(onProgress?: (loaded: number, total: number) => void): Promise<boolean> {
+    const total = this.count;
+    let completed = 0;
+    const concurrency = Math.min(8, this.profile.concurrency || 6);
+    let nextIndex = 0;
+
+    onProgress?.(this.cache.size, total);
+
+    const worker = async () => {
+      while (nextIndex < total && !this.disposed) {
+        const i = nextIndex++;
+        if (this.cache.has(i)) {
+          completed++;
+          onProgress?.(completed, total);
+          continue;
+        }
+        await this.load(i);
+        completed++;
+        onProgress?.(completed, total);
+      }
+    };
+
+    const workers = Array.from({ length: concurrency }, () => worker());
+    await Promise.all(workers);
+    return this.cache.size >= Math.floor(total * 0.95);
+  }
+
   get(index: number): HTMLImageElement | undefined {
     return this.cache.get(index);
   }

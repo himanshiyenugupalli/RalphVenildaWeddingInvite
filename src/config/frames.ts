@@ -34,8 +34,8 @@ export function frameUrl(index: number): string {
  * Full-resolution 1080×1920 frames are ~8 MB each once decoded, so the cache is bounded.
  */
 export const LOADER_CONFIG = {
-  mobile: { maxCached: 48, concurrency: 3, ahead: 24, behind: 10, initial: 12 },
-  desktop: { maxCached: 120, concurrency: 5, ahead: 45, behind: 20, initial: 20 },
+  mobile: { maxCached: 180, concurrency: 6, ahead: 40, behind: 20, initial: 174 },
+  desktop: { maxCached: 180, concurrency: 8, ahead: 50, behind: 20, initial: 174 },
   /** Below this width (px) the mobile profile is used. */
   mobileBreakpoint: 768,
 };

@@ -4,7 +4,8 @@ import { WEDDING } from "@/config/wedding";
 
 export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // Music is ON by default as requested
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,23 @@ export function MusicPlayer() {
     audio.addEventListener("pause", onPause);
     audio.addEventListener("canplaythrough", onCanPlay);
 
+    const startAudio = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {});
+      }
+    };
+
+    // Global listener for wedding loader enter button or user gestures
+    window.addEventListener("user-start-audio", startAudio);
+    window.addEventListener("pointerdown", startAudio, { once: true, passive: true });
+    window.addEventListener("touchstart", startAudio, { once: true, passive: true });
+    window.addEventListener("click", startAudio, { once: true, passive: true });
+    window.addEventListener("keydown", startAudio, { once: true, passive: true });
+    window.addEventListener("scroll", startAudio, { once: true, passive: true });
+
     // Attempt autoplay immediately upon opening
     const playPromise = audio.play();
     if (playPromise !== undefined) {
@@ -30,32 +48,8 @@ export function MusicPlayer() {
           setIsPlaying(true);
         })
         .catch(() => {
-          // Autoplay blocked by browser policy.
-          // Listen for the visitor's first gesture anywhere (scroll, tap, click) to start audio smoothly.
-          setIsPlaying(false);
-
-          const startAudioOnGesture = () => {
-            if (audioRef.current && audioRef.current.paused) {
-              audioRef.current
-                .play()
-                .then(() => {
-                  setIsPlaying(true);
-                })
-                .catch(() => {});
-            }
-            cleanupGestureListeners();
-          };
-
-          const gestureEvents = ["pointerdown", "touchstart", "click", "keydown", "scroll"];
-          const cleanupGestureListeners = () => {
-            gestureEvents.forEach((evt) => {
-              window.removeEventListener(evt, startAudioOnGesture);
-            });
-          };
-
-          gestureEvents.forEach((evt) => {
-            window.addEventListener(evt, startAudioOnGesture, { once: true, passive: true });
-          });
+          // Autoplay blocked by browser policy without gesture.
+          // Keep default state isPlaying=true, listeners above will trigger audio on first interaction!
         });
     }
 
@@ -63,6 +57,12 @@ export function MusicPlayer() {
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("canplaythrough", onCanPlay);
+      window.removeEventListener("user-start-audio", startAudio);
+      window.removeEventListener("pointerdown", startAudio);
+      window.removeEventListener("touchstart", startAudio);
+      window.removeEventListener("click", startAudio);
+      window.removeEventListener("keydown", startAudio);
+      window.removeEventListener("scroll", startAudio);
       audio.pause();
       audio.src = "";
       audioRef.current = null;

@@ -5,6 +5,7 @@ import { visibleBlockIds } from "@/config/scenes";
 import { WEDDING, venueFullAddress } from "@/config/wedding";
 import { FrameLoader, type LoaderStatus } from "@/lib/frame-loader";
 import { TextOverlay } from "./TextOverlay";
+import { WeddingLoader } from "./WeddingLoader";
 
 const profileFor = () =>
   window.innerWidth < LOADER_CONFIG.mobileBreakpoint ? LOADER_CONFIG.mobile : LOADER_CONFIG.desktop;
@@ -24,6 +25,12 @@ export function CinematicInvitation() {
   const [frame, setFrame] = useState(0);
   const [status, setStatus] = useState<LoaderStatus>("probing");
   const [isDev] = useState(() => import.meta.env.DEV);
+
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [loadedFrames, setLoadedFrames] = useState(0);
+  const [isFullyPreloaded, setIsFullyPreloaded] = useState(false);
+  const [loaderDismissed, setLoaderDismissed] = useState(false);
+  const [fadeOutLoader, setFadeOutLoader] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -100,14 +107,23 @@ export function CinematicInvitation() {
       }
     };
 
-    loader.probe().then((ok) => {
+    loader.preloadAll((loaded, total) => {
+      if (!alive) return;
+      setLoadedFrames(loaded);
+      const pct = Math.min(100, Math.round((loaded / total) * 100));
+      setLoadProgress(pct);
+      if (loaded >= 1 && !drawnRef.current) {
+        sizeCanvas();
+        draw(true);
+      }
+    }).then((ok) => {
       if (!alive) return;
       setStatus(ok ? "ready" : "missing");
       if (ok) {
         sizeCanvas();
         update();
-        loader.setCurrent(frameRef.current);
-        loader.preload(10);
+        draw(true);
+        setIsFullyPreloaded(true);
       }
     });
 
@@ -130,16 +146,35 @@ export function CinematicInvitation() {
 
   const visible = visibleBlockIds(frame);
 
+  const handleEnter = () => {
+    window.dispatchEvent(new Event("user-start-audio"));
+    setFadeOutLoader(true);
+    setTimeout(() => {
+      setLoaderDismissed(true);
+    }, 700);
+  };
+
   return (
-    <section
-      ref={sectionRef}
-      aria-label="Animated wedding invitation"
-      className="relative bg-paper"
-      style={{
-        height: `${SCROLL_CONFIG.scrollLengthVh}vh`,
-        minHeight: `${SCROLL_CONFIG.scrollLengthVh}svh`,
-      }}
-    >
+    <>
+      {!loaderDismissed && (
+        <WeddingLoader
+          progress={loadProgress}
+          loadedCount={loadedFrames}
+          totalCount={FRAME_CONFIG.frameCount}
+          isReady={isFullyPreloaded}
+          onEnter={handleEnter}
+          fadeOut={fadeOutLoader}
+        />
+      )}
+      <section
+        ref={sectionRef}
+        aria-label="Animated wedding invitation"
+        className="relative bg-paper"
+        style={{
+          height: `${SCROLL_CONFIG.scrollLengthVh}vh`,
+          minHeight: `${SCROLL_CONFIG.scrollLengthVh}svh`,
+        }}
+      >
       {/* Accessible text version of the invitation */}
       <div className="sr-only">
         <h1>
@@ -184,6 +219,7 @@ export function CinematicInvitation() {
         </div>
       </div>
     </section>
+  </>
   );
 }
 
