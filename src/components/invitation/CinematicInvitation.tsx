@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { FRAME_CONFIG, LOADER_CONFIG, SCROLL_CONFIG, frameUrl } from "@/config/frames";
 import { visibleBlockIds } from "@/config/scenes";
@@ -149,14 +149,40 @@ export function CinematicInvitation() {
 
   const visible = visibleBlockIds(frame);
 
-  const handleEnter = () => {
+  const hasEnteredRef = useRef(false);
+
+  const handleEnter = useCallback(() => {
+    if (hasEnteredRef.current) return;
+    hasEnteredRef.current = true;
     window.dispatchEvent(new Event("user-start-audio"));
     window.dispatchEvent(new Event("wedding-loader-done"));
     setFadeOutLoader(true);
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
     setTimeout(() => {
       setLoaderDismissed(true);
     }, 600);
-  };
+  }, []);
+
+  useEffect(() => {
+    if ((isFullyPreloaded || loadProgress >= 100) && !hasEnteredRef.current) {
+      const timer = setTimeout(() => {
+        handleEnter();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isFullyPreloaded, loadProgress, handleEnter]);
+
+  // Safety fallback: auto-enter after 7s max so guests on slow networks never get stuck
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasEnteredRef.current) {
+        handleEnter();
+      }
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, [handleEnter]);
 
   return (
     <>

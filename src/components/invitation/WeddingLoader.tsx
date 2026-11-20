@@ -16,22 +16,29 @@ export function WeddingLoader({
   onEnter,
   fadeOut,
 }: WeddingLoaderProps) {
-  const enteredRef = useRef(false);
+  const onEnterRef = useRef(onEnter);
+  onEnterRef.current = onEnter;
+  const triggeredRef = useRef(false);
 
   // Automatically trigger enter as soon as 100% loaded
   useEffect(() => {
-    if (isReady && !enteredRef.current) {
-      enteredRef.current = true;
+    if ((isReady || progress >= 100) && !triggeredRef.current) {
+      triggeredRef.current = true;
       const timer = setTimeout(() => {
-        onEnter();
-      }, 350);
+        onEnterRef.current();
+      }, 300);
       return () => clearTimeout(timer);
     }
-  }, [isReady, onEnter]);
+  }, [isReady, progress]);
 
   return (
     <div
-      className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-paper px-6 transition-all duration-700 ${
+      onClick={() => {
+        if (progress >= 95 || isReady) {
+          onEnterRef.current();
+        }
+      }}
+      className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-paper px-6 transition-all duration-700 select-none ${
         fadeOut ? "opacity-0 pointer-events-none scale-102" : "opacity-100 scale-100"
       }`}
       aria-label="Loading Wedding Invitation"
@@ -53,14 +60,14 @@ export function WeddingLoader({
       <div className="mt-7 flex flex-col items-center w-full max-w-xs">
         <div className="flex w-full items-center justify-between text-xs font-sans tracking-[0.18em] text-navy/70 mb-2">
           <span className="font-serif italic text-base text-navy/85">Wedding Loading…</span>
-          <span className="font-sans font-medium text-navy">{progress}%</span>
+          <span className="font-sans font-medium text-navy">{Math.min(100, Math.max(0, progress))}%</span>
         </div>
 
         {/* Progress bar */}
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-navy/10">
           <div
             className="h-full bg-gradient-to-r from-baby via-navy to-[#c4a460] transition-all duration-200 ease-out rounded-full"
-            style={{ width: `${Math.max(4, progress)}%` }}
+            style={{ width: `${Math.max(4, Math.min(100, progress))}%` }}
           />
         </div>
       </div>
