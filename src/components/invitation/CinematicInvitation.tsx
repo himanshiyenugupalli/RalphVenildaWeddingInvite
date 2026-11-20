@@ -148,10 +148,11 @@ export function CinematicInvitation() {
 
   const handleEnter = () => {
     window.dispatchEvent(new Event("user-start-audio"));
+    window.dispatchEvent(new Event("wedding-loader-done"));
     setFadeOutLoader(true);
     setTimeout(() => {
       setLoaderDismissed(true);
-    }, 700);
+    }, 600);
   };
 
   return (
@@ -203,12 +204,12 @@ export function CinematicInvitation() {
           <TextOverlay visible={visible} />
         </div>
 
-        {/* Scroll prompt: positioned at the bottom middle initially, smoothly floats down & fades away once scrolling begins */}
+        {/* Scroll prompt: positioned at the bottom middle initially, smoothly appears AFTER loading finishes & fades away once scrolling begins */}
         <div
           className={`pointer-events-none absolute bottom-5 sm:bottom-7 inset-x-0 z-30 flex justify-center transition-all duration-700 ease-out ${
-            frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+            !loaderDismissed || frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
           }`}
-          aria-hidden={frame > 3}
+          aria-hidden={!loaderDismissed || frame > 3}
         >
           <div className="flex items-center gap-2 rounded-full bg-paper/85 px-4 py-2 sm:px-5 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy">
             <span className="font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-navy">

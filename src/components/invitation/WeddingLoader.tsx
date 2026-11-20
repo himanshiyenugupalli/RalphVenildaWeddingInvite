@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { WEDDING } from "@/config/wedding";
 
 interface WeddingLoaderProps {
@@ -16,18 +16,18 @@ export function WeddingLoader({
   onEnter,
   fadeOut,
 }: WeddingLoaderProps) {
-  const [autoEntered, setAutoEntered] = useState(false);
+  const enteredRef = useRef(false);
 
-  // Optional auto-enter after a short delay once 100% loaded
+  // Automatically trigger enter as soon as 100% loaded
   useEffect(() => {
-    if (isReady && !autoEntered) {
+    if (isReady && !enteredRef.current) {
+      enteredRef.current = true;
       const timer = setTimeout(() => {
-        setAutoEntered(true);
         onEnter();
-      }, 1500);
+      }, 350);
       return () => clearTimeout(timer);
     }
-  }, [isReady, autoEntered, onEnter]);
+  }, [isReady, onEnter]);
 
   return (
     <div
@@ -50,33 +50,20 @@ export function WeddingLoader({
         {WEDDING.groom} &amp; {WEDDING.bride}
       </h1>
 
-      {!isReady ? (
-        <div className="mt-7 flex flex-col items-center w-full max-w-xs">
-          <div className="flex w-full items-center justify-between text-xs font-sans tracking-[0.18em] text-navy/70 mb-2">
-            <span className="font-serif italic text-base text-navy/85">Wedding Loading…</span>
-            <span className="font-sans font-medium text-navy">{progress}%</span>
-          </div>
+      <div className="mt-7 flex flex-col items-center w-full max-w-xs">
+        <div className="flex w-full items-center justify-between text-xs font-sans tracking-[0.18em] text-navy/70 mb-2">
+          <span className="font-serif italic text-base text-navy/85">Wedding Loading…</span>
+          <span className="font-sans font-medium text-navy">{progress}%</span>
+        </div>
 
-          {/* Progress bar */}
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-navy/10">
-            <div
-              className="h-full bg-gradient-to-r from-baby via-navy to-[#c4a460] transition-all duration-200 ease-out rounded-full"
-              style={{ width: `${Math.max(4, progress)}%` }}
-            />
-          </div>
+        {/* Progress bar */}
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-navy/10">
+          <div
+            className="h-full bg-gradient-to-r from-baby via-navy to-[#c4a460] transition-all duration-200 ease-out rounded-full"
+            style={{ width: `${Math.max(4, progress)}%` }}
+          />
         </div>
-      ) : (
-        <div className="mt-8 flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
-          <button
-            type="button"
-            onClick={onEnter}
-            className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-navy px-8 py-3.5 font-sans text-xs uppercase tracking-[0.25em] text-paper transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-navy-soft active:translate-y-0 active:scale-95 shadow-md cursor-pointer"
-          >
-            <span>Open Invitation</span>
-            <span className="text-sm">✦</span>
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -4,9 +4,11 @@ import { WEDDING } from "@/config/wedding";
 
 export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // Music is ON by default as requested
+  const userToggledRef = useRef(false);
+  // Music is ON by default
   const [isPlaying, setIsPlaying] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const audio = new Audio(WEDDING.music.src);
@@ -24,6 +26,7 @@ export function MusicPlayer() {
     audio.addEventListener("canplaythrough", onCanPlay);
 
     const startAudio = () => {
+      if (userToggledRef.current) return;
       if (audioRef.current && audioRef.current.paused) {
         audioRef.current
           .play()
@@ -32,32 +35,28 @@ export function MusicPlayer() {
       }
     };
 
-    // Global listener for wedding loader enter button or user gestures
-    window.addEventListener("user-start-audio", startAudio);
+    const handleLoaderComplete = () => {
+      setIsVisible(true);
+      startAudio();
+    };
+
+    // Show button and play music right after loading screen finishes
+    window.addEventListener("wedding-loader-done", handleLoaderComplete);
+    window.addEventListener("user-start-audio", handleLoaderComplete);
+
+    // Fallback user interaction listeners (in case mobile browser requires a touch to unmute)
     window.addEventListener("pointerdown", startAudio, { once: true, passive: true });
     window.addEventListener("touchstart", startAudio, { once: true, passive: true });
     window.addEventListener("click", startAudio, { once: true, passive: true });
     window.addEventListener("keydown", startAudio, { once: true, passive: true });
     window.addEventListener("scroll", startAudio, { once: true, passive: true });
 
-    // Attempt autoplay immediately upon opening
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          // Autoplay blocked by browser policy without gesture.
-          // Keep default state isPlaying=true, listeners above will trigger audio on first interaction!
-        });
-    }
-
     return () => {
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("canplaythrough", onCanPlay);
-      window.removeEventListener("user-start-audio", startAudio);
+      window.removeEventListener("wedding-loader-done", handleLoaderComplete);
+      window.removeEventListener("user-start-audio", handleLoaderComplete);
       window.removeEventListener("pointerdown", startAudio);
       window.removeEventListener("touchstart", startAudio);
       window.removeEventListener("click", startAudio);
@@ -72,11 +71,16 @@ export function MusicPlayer() {
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
+    userToggledRef.current = true;
 
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
-      audio.play().catch(() => {});
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
     }
   };
 
@@ -84,34 +88,32 @@ export function MusicPlayer() {
     <button
       type="button"
       onClick={toggleMusic}
-      className="group fixed top-4 sm:top-6 inset-x-0 mx-auto w-fit z-50 flex items-center gap-2 rounded-full bg-paper/85 px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy transition-all duration-300 hover:bg-paper hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+      className={`group fixed top-4 sm:top-6 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center rounded-full bg-paper/90 p-2.5 sm:p-3 shadow-md backdrop-blur-md border border-navy/15 text-navy transition-all duration-700 ease-out hover:bg-paper hover:shadow-lg hover:scale-110 active:scale-95 cursor-pointer ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+      }`}
       aria-label={isPlaying ? "Mute background music" : "Play background music"}
       title={isPlaying ? "Mute music" : "Play music"}
     >
       <span className="relative flex h-5 w-5 items-center justify-center">
         {isPlaying ? (
           <>
-            <Volume2 className="h-4 w-4 text-navy transition-transform duration-300 group-hover:scale-110" />
+            <Volume2 className="h-4.5 w-4.5 text-navy transition-transform duration-300 group-hover:scale-110" />
             <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-navy/40 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-navy" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-navy" />
             </span>
           </>
         ) : (
-          <VolumeX className="h-4 w-4 text-navy/60 transition-transform duration-300 group-hover:scale-110" />
+          <VolumeX className="h-4.5 w-4.5 text-navy/60 transition-transform duration-300 group-hover:scale-110" />
         )}
-      </span>
-
-      <span className="font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-navy">
-        {isPlaying ? "Music On" : "Music Off"}
       </span>
 
       {/* Gentle animated equalizer wave when music is playing */}
       {isPlaying && (
-        <span className="flex items-end gap-0.5 h-3 ml-0.5" aria-hidden="true">
+        <span className="flex items-end gap-0.5 h-3.5 ml-1 pr-0.5" aria-hidden="true">
           <span className="w-0.5 bg-navy rounded-full animate-[pulse_0.8s_ease-in-out_infinite] h-2.5" />
-          <span className="w-0.5 bg-navy rounded-full animate-[pulse_1.2s_ease-in-out_infinite_0.2s] h-3" />
-          <span className="w-0.5 bg-navy rounded-full animate-[pulse_0.9s_ease-in-out_infinite_0.4s] h-1.5" />
+          <span className="w-0.5 bg-navy rounded-full animate-[pulse_1.2s_ease-in-out_infinite_0.2s] h-3.5" />
+          <span className="w-0.5 bg-navy rounded-full animate-[pulse_0.9s_ease-in-out_infinite_0.4s] h-2" />
         </span>
       )}
     </button>
