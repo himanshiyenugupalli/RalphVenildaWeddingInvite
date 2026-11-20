@@ -5,8 +5,8 @@ import { WEDDING } from "@/config/wedding";
 export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userToggledRef = useRef(false);
-  // Music is ON by default
-  const [isPlaying, setIsPlaying] = useState(true);
+  // Strictly false initially so UI never fakes playing state when browser blocks sound
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -14,72 +14,89 @@ export function MusicPlayer() {
     if (!audio) return;
 
     audio.volume = 0.6;
+    let loaderDone = false;
 
-    const playAudio = () => {
+    const tryPlay = () => {
       if (userToggledRef.current) return;
       if (audio.paused) {
         audio
           .play()
-          .then(() => setIsPlaying(true))
+          .then(() => {
+            setIsPlaying(true);
+          })
           .catch(() => {
-            // Browser autoplay policy prevented cold sound without gesture.
-            // Will automatically play on the very first touch/scroll/click.
+            // Browser autoplay blocked cold sound without gesture.
+            // Keep state false so UI never pretends sound is playing when it's silent.
+            setIsPlaying(false);
           });
       }
     };
 
-    const onPlay = () => setIsPlaying(true);
+    // Strictly sync UI state with actual audio playback
+    const onPlaying = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
 
-    audio.addEventListener("play", onPlay);
+    audio.addEventListener("playing", onPlaying);
+    audio.addEventListener("play", onPlaying);
     audio.addEventListener("pause", onPause);
-    audio.addEventListener("canplaythrough", playAudio);
-    audio.addEventListener("loadeddata", playAudio);
-
-    // Try playing immediately upon mount
-    playAudio();
+    audio.addEventListener("ended", onPause);
 
     const handleLoaderComplete = () => {
+      loaderDone = true;
       setIsVisible(true);
-      playAudio();
+      tryPlay();
     };
 
-    // Trigger right when loading screen completes
+    // When loading screen completes, reveal button and start music
     window.addEventListener("wedding-loader-done", handleLoaderComplete);
     window.addEventListener("user-start-audio", handleLoaderComplete);
 
-    // Capture any user gesture anywhere on screen (first touch, scroll, swipe, click)
-    const gestureEvents = ["pointerdown", "touchstart", "scroll", "wheel", "click", "keydown"] as const;
-    gestureEvents.forEach((evt) => {
-      window.addEventListener(evt, playAudio, { once: true, passive: true });
-    });
+    // Any interaction (scroll, touch, click, swipe) starts audio immediately if blocked earlier
+    const handleGesture = () => {
+      if (userToggledRef.current) return;
+      if (!loaderDone) return;
+      if (audio.paused) {
+        tryPlay();
+      }
+    };
+
+    window.addEventListener("pointerdown", handleGesture, { passive: true });
+    window.addEventListener("touchstart", handleGesture, { passive: true });
+    window.addEventListener("click", handleGesture, { passive: true });
+    window.addEventListener("scroll", handleGesture, { passive: true });
+    window.addEventListener("wheel", handleGesture, { passive: true });
+    window.addEventListener("keydown", handleGesture, { passive: true });
 
     return () => {
-      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("playing", onPlaying);
+      audio.removeEventListener("play", onPlaying);
       audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("canplaythrough", playAudio);
-      audio.removeEventListener("loadeddata", playAudio);
+      audio.removeEventListener("ended", onPause);
       window.removeEventListener("wedding-loader-done", handleLoaderComplete);
       window.removeEventListener("user-start-audio", handleLoaderComplete);
-      gestureEvents.forEach((evt) => {
-        window.removeEventListener(evt, playAudio);
-      });
+      window.removeEventListener("pointerdown", handleGesture);
+      window.removeEventListener("touchstart", handleGesture);
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("scroll", handleGesture);
+      window.removeEventListener("wheel", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
     };
   }, []);
 
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    userToggledRef.current = true;
 
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
+    if (audio.paused) {
+      userToggledRef.current = false;
       audio
         .play()
         .then(() => setIsPlaying(true))
         .catch(() => {});
+    } else {
+      userToggledRef.current = true;
+      audio.pause();
+      setIsPlaying(false);
     }
   };
 
@@ -89,14 +106,13 @@ export function MusicPlayer() {
         ref={audioRef}
         src={WEDDING.music.src}
         loop
-        autoPlay
         playsInline
         preload="auto"
       />
       <button
         type="button"
         onClick={toggleMusic}
-        className={`group fixed top-4 sm:top-6 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center rounded-full bg-paper/90 p-2.5 sm:p-3 shadow-md backdrop-blur-md border border-navy/15 text-navy transition-all duration-700 ease-out hover:bg-paper hover:shadow-lg hover:scale-110 active:scale-95 cursor-pointer ${
+        className={`group fixed top-4 sm:top-6 inset-x-0 mx-auto w-fit z-50 flex items-center justify-center rounded-full bg-paper/95 p-2.5 sm:p-3 shadow-md backdrop-blur-md border border-navy/20 text-navy transition-all duration-700 ease-out hover:bg-paper hover:shadow-lg hover:scale-110 active:scale-95 cursor-pointer ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
         }`}
         aria-label={isPlaying ? "Mute background music" : "Play background music"}
@@ -112,11 +128,11 @@ export function MusicPlayer() {
               </span>
             </>
           ) : (
-            <VolumeX className="h-4.5 w-4.5 text-navy/60 transition-transform duration-300 group-hover:scale-110" />
+            <VolumeX className="h-4.5 w-4.5 text-navy/70 transition-transform duration-300 group-hover:scale-110" />
           )}
         </span>
 
-        {/* Gentle animated equalizer wave when music is playing */}
+        {/* Gentle animated equalizer wave ONLY when music is ACTUALLY playing */}
         {isPlaying && (
           <span className="flex items-end gap-0.5 h-3.5 ml-1 pr-0.5" aria-hidden="true">
             <span className="w-0.5 bg-navy rounded-full animate-[pulse_0.8s_ease-in-out_infinite] h-2.5" />
