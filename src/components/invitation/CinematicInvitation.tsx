@@ -228,17 +228,17 @@ export function CinematicInvitation() {
             className="absolute inset-0 block h-full w-full [transform:translateZ(0)] will-change-transform"
           />
 
-          {status !== "ready" && <StagePlaceholder status={status} />}
-
           <TextOverlay visible={visible} />
         </div>
 
-        {/* Scroll prompt: positioned at the bottom middle initially, smoothly appears AFTER loading finishes & fades away once scrolling begins */}
+        {/* Scroll prompt: positioned at the bottom middle, immediately visible right after load */}
         <div
           className={`pointer-events-none absolute bottom-5 sm:bottom-7 inset-x-0 z-30 flex justify-center transition-all duration-700 ease-out ${
-            !loaderDismissed || frame > 3 ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+            (!fadeOutLoader && !loaderDismissed) || frame > 3
+              ? "opacity-0 translate-y-3 pointer-events-none"
+              : "opacity-100 translate-y-0"
           }`}
-          aria-hidden={!loaderDismissed || frame > 3}
+          aria-hidden={(!fadeOutLoader && !loaderDismissed) || frame > 3}
         >
           <div className="flex items-center gap-2 rounded-full bg-paper/85 px-4 py-2 sm:px-5 sm:py-2.5 shadow-md backdrop-blur-md border border-navy/15 text-navy">
             <span className="font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-navy">
@@ -250,30 +250,5 @@ export function CinematicInvitation() {
       </div>
     </section>
   </>
-  );
-}
-
-function StagePlaceholder({ status }: { status: LoaderStatus }) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-baby-soft p-[8cqw] text-center">
-      <div className="absolute inset-[4cqw] border border-dashed border-navy/30" />
-      {status === "probing" ? (
-        <p className="font-sans text-[3.4cqw] uppercase tracking-[0.3em] text-navy-soft">Loading…</p>
-      ) : (
-        <div className="relative max-w-[80cqw] font-sans text-navy-soft">
-          <p className="text-[3cqw] font-semibold uppercase tracking-[0.3em] text-navy">
-            Development placeholder
-          </p>
-          <p className="mt-[3cqw] text-[3.4cqw] leading-relaxed">
-            Frame sequence not installed. This is not the final animation.
-          </p>
-          <p className="mt-[3cqw] text-[3cqw] leading-relaxed">
-            Add the JPG frames to <code className="font-mono">public/frames/</code> — expected first
-            file: <code className="font-mono break-all">{frameUrl(0)}</code>. Adjust the naming in{" "}
-            <code className="font-mono">src/config/frames.ts</code>.
-          </p>
-        </div>
-      )}
-    </div>
   );
 }

@@ -150,6 +150,9 @@ export function Footer() {
       <Reveal delay={140}>
         <p className="mt-3 font-sans text-xs uppercase tracking-[0.4em] opacity-80">{WEDDING.dateShort}</p>
       </Reveal>
+      <p className="mt-8 font-sans text-[11px] tracking-widest text-paper/40">
+        {WEDDING.builtBy}
+      </p>
     </footer>
   );
 }

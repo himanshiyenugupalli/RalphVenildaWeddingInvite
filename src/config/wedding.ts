@@ -40,6 +40,7 @@ export const WEDDING = {
     src: "/wedding-song.mp3",
     title: "Ralph & Venilda Wedding Song",
   },
+  builtBy: "build by ___",
 } as const;
 
 export const venueFullAddress = () =>
