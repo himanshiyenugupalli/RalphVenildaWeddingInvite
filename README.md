@@ -1,4 +1,4 @@
-# Ralph & Venilda — Cinematic 3D Wedding Invitation
+# Ralph & Venilda (Cinematic 3D Wedding Invitation)
 
 An elegant, interactive, and scroll-driven cinematic wedding invitation website created to celebrate the wedding of **Ralph & Venilda**.
 
