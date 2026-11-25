@@ -40,7 +40,11 @@ export const WEDDING = {
     src: "/wedding-song.mp3",
     title: "Ralph & Venilda Wedding Song",
   },
-  builtBy: "build by ___",
+  builtBy: {
+    label: "build by",
+    url: "https://thewebandonly.tech",
+    logo: "/thewebandonlylogo.svg",
+  },
 } as const;
 
 export const venueFullAddress = () =>

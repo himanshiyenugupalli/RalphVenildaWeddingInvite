@@ -147,9 +147,23 @@ export function Footer() {
           {WEDDING.groom} &amp; {WEDDING.bride}
         </p>
       </Reveal>
-      <p className="mt-8 font-sans text-[11px] tracking-widest text-paper/40">
-        {WEDDING.builtBy}
-      </p>
+      <div className="mt-8 flex items-center justify-center gap-2 text-[11px] tracking-widest text-paper/50">
+        <span>{WEDDING.builtBy.label}</span>
+        <a
+          href={WEDDING.builtBy.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center transition-all duration-200 hover:opacity-100 hover:scale-105"
+          title="thewebandonly.tech"
+          aria-label="thewebandonly.tech"
+        >
+          <img
+            src={WEDDING.builtBy.logo}
+            alt="thewebandonly logo"
+            className="h-5 w-5 object-contain inline-block"
+          />
+        </a>
+      </div>
     </footer>
   );
 }
