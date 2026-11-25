@@ -41,7 +41,7 @@ export const WEDDING = {
     title: "Ralph & Venilda Wedding Song",
   },
   builtBy: {
-    label: "build by",
+    label: "developed by",
     url: "https://thewebandonly.tech",
     logo: "/thewebandonlylogo.svg",
   },
